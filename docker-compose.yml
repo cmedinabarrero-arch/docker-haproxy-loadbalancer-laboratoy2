@@ -1,0 +1,52 @@
+services:
+  backend1:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    container_name: backend1
+    volumes:
+      - ./backend/main.py:/app/main.py:ro
+    networks:
+      - app-net
+
+  backend2:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    container_name: backend2
+    volumes:
+      - ./backend/main.py:/app/main.py:ro
+    networks:
+      - app-net
+
+  haproxy:
+    image: haproxy:alpine
+    container_name: haproxy-lb
+    ports:
+      - "5000:5000"
+      - "8404:8404"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - backend1
+      - backend2
+    networks:
+      - app-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: frontend-react
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src:ro
+    depends_on:
+      - haproxy
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

@@ -1,0 +1,10 @@
+# En la raíz C:\Users\User\Desktop\docker-haproxy-main
+Set-Content -Path .\.gitignore -Value @"
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+"@
