@@ -5,12 +5,13 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
 
-  const API_URL = "http://localhost:5000";
+  // Consultar la ruta /api a traves del puerto unico expuesto por HAProxy
+  const API_URL = "/api";
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/`);
+      const response = await fetch(API_URL);
       const result = await response.json();
       setData(result);
       setHistory((prev) => [
@@ -20,7 +21,7 @@ function App() {
           server: result.server_id,
           status: result.status,
         },
-        ...prev.slice(0, 9), // Conservar las últimas 10 peticiones
+        ...prev.slice(0, 9), // Conservar las ultimas 10 peticiones
       ]);
     } catch (error) {
       console.error("Error al consultar el balanceador:", error);
@@ -37,7 +38,7 @@ function App() {
   return (
     <div style={{ fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif', padding: '30px', maxWidth: '800px', margin: '0 auto' }}>
       <h1>Panel de Balanceo de Carga (HAProxy)</h1>
-      <p>Consultando a través del puerto <strong>5000</strong></p>
+      <p>Entrada única por el <strong>Puerto 80</strong> (Enrutamiento: <code>/</code> &rarr; Frontend | <code>/api</code> &rarr; Backends FastAPI)</p>
 
       <div style={{ marginBottom: '20px' }}>
         <button 
@@ -53,7 +54,7 @@ function App() {
             cursor: loading ? 'not-allowed' : 'pointer'
           }}
         >
-          {loading ? 'Consultando...' : 'Hacer Petición HTTP'}
+          {loading ? 'Consultando...' : 'Hacer Petición HTTP (/api)'}
         </button>
       </div>
 
@@ -65,8 +66,8 @@ function App() {
           border: `1px solid ${data.status === 'healthy' ? '#38b2ac' : '#e53e3e'}`,
           marginBottom: '20px'
         }}>
-          <h3>Respuesta Actual:</h3>
-          <p><strong>Servidor ID (Hostname):</strong> <code style={{ fontSize: '18px', color: '#2b6cb0' }}>{data.server_id || 'N/A'}</code></p>
+          <h3>Respuesta Actual del Backend:</h3>
+          <p><strong>Servidor Atendió (Hostname):</strong> <code style={{ fontSize: '18px', color: '#2b6cb0' }}>{data.server_id || 'N/A'}</code></p>
           <p><strong>Estado:</strong> {data.status}</p>
           <p><strong>Mensaje:</strong> {data.message}</p>
         </div>

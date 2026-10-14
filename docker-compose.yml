@@ -19,31 +19,28 @@ services:
     networks:
       - app-net
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: frontend-react
+    volumes:
+      - ./frontend/src:/app/src:ro
+    networks:
+      - app-net
+
   haproxy:
     image: haproxy:alpine
     container_name: haproxy-lb
     ports:
-      - "5000:5000"
+      - "80:80"
       - "8404:8404"
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
       - backend1
       - backend2
-    networks:
-      - app-net
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: dockerfile
-    container_name: frontend-react
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend/src:/app/src:ro
-    depends_on:
-      - haproxy
+      - frontend
     networks:
       - app-net
 

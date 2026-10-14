@@ -4,7 +4,7 @@ import socket
 
 app = FastAPI(title="Backend Service")
 
-# Habilitar CORS para que el frontend pueda consultar sin bloqueos
+# Habilitar CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,13 +18,15 @@ def read_root():
     return {
         "status": "healthy",
         "server_id": socket.gethostname(),
-        "message": "Respuesta balanceada desde FastAPI"
+        "message": "Respuesta balanceada desde FastAPI (Raiz)"
     }
 
 @app.get("/api")
+@app.get("/api/")
 def read_api():
     return {
-        "status": "ok",
+        "status": "healthy",
         "server_id": socket.gethostname(),
+        "message": "Respuesta balanceada desde FastAPI (/api)",
         "data": [10, 20, 30, 40, 50]
     }
